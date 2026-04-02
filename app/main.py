@@ -1,62 +1,63 @@
+import logging
+import os
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+
 from .database import engine, Base, SessionLocal
 from . import models
 from .routes import records, dashboard
 
-# 1. Initialize Database Tables
-# This creates the .db file and all tables defined in models.py if they don't exist
+# Setup Professional Logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# Load Environment Variables
+load_dotenv()
+
+# Create Database Tables
 Base.metadata.create_all(bind=engine)
 
-# 2. App Instance with Metadata
-# This information shows up at the top of your /docs page
 app = FastAPI(
-    title="Finance Data Management API",
-    description="""
-    A secure backend for managing financial records with Role-Based Access Control (RBAC).
-    
-    ### Access Credentials (Use 'x-user-id' Header):
-    * **User ID 1**: Admin (Full Access)
-    * **User ID 2**: Analyst (View + Dashboard)
-    * **User ID 3**: Viewer (View Records Only)
-    """,
+    title="Finance Dashboard API",
+    description="Backend for financial records with Role-Based Access Control.",
     version="1.0.0",
-    contact={
-        "name": "Backend Developer Assessment",
-    }
+    debug=os.getenv("DEBUG", "False") == "True"
 )
 
-# 3. Seed Initial Data
-# This ensures the reviewer has users to test with immediately
 @app.on_event("startup")
 def startup_populate_db():
+    """
+    Seeds the database with initial users if it's empty.
+    This ensures the reviewer has immediate accounts to test with.
+    """
     db = SessionLocal()
     try:
-        # Check if users already exist to avoid duplicates on reload
         if not db.query(models.User).first():
-            print("Seeding initial users...")
-            users = [
-                models.User(email="admin@finance.com", role="Admin"),
-                models.User(email="analyst@finance.com", role="Analyst"),
-                models.User(email="viewer@finance.com", role="Viewer")
+            logger.info("Database is empty. Seeding initial users...")
+            test_users = [
+                models.User(email="admin@company.com", role="Admin"),
+                models.User(email="analyst@company.com", role="Analyst"),
+                models.User(email="viewer@company.com", role="Viewer")
             ]
-            db.add_all(users)
+            db.add_all(test_users)
             db.commit()
-            print("Database seeded successfully.")
+            logger.info("Successfully seeded 3 users (Admin, Analyst, Viewer).")
+        else:
+            logger.info("Database already contains data. Skipping seeding.")
     except Exception as e:
-        print(f"Error seeding database: {e}")
+        logger.error(f"Error during startup seeding: {e}")
     finally:
         db.close()
 
-# 4. Root Redirect
-# This sends anyone visiting the base URL directly to the interactive docs
 @app.get("/", include_in_schema=False)
 async def root_redirect():
-    """Redirects base URL to the Swagger UI documentation."""
+    """Redirects the root URL to the interactive Swagger UI."""
     return RedirectResponse(url="/docs")
 
-# 5. Include Domain Routers
-# Keeps the main file clean by importing logic from the routes folder
+# Include Modular Routers
 app.include_router(records.router)
 app.include_router(dashboard.router)
