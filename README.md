@@ -1,59 +1,90 @@
 # 💰 Finance Data Processing & Access Control Backend
 
-## 🚀 Project Overview
-This project is a high-performance backend for a **Finance Dashboard**, featuring a robust **Role-Based Access Control (RBAC)** system. It allows for the secure management of financial records, provides automated summary analytics, and enforces strict permission boundaries between different user roles.
-
-The system is built using **FastAPI** and **SQLAlchemy**, following a clean, modular architecture that separates concerns between routing, data validation, and database logic.
-
-### Key Features
-- **RBAC Security:** Custom FastAPI dependency injection to enforce permissions for Admins, Analysts, and Viewers.
-- **Automated Summaries:** Efficient SQL-level data aggregation for real-time dashboard totals.
-- **Strict Validation:** Data integrity ensured via Pydantic v2 models and SQLAlchemy types.
-- **Interactive Documentation:** Fully configured Swagger UI for easy API testing and evaluation.
+A high-performance backend for a **Finance Dashboard** featuring a Role-Based Access Control (RBAC) system. Built with FastAPI and SQLAlchemy following a clean, modular service-repository architecture.
 
 ---
 
-## 🛠️ Technical Stack
-- **Language:** Python 3.10+
-- **Framework:** [FastAPI](https://fastapi.tiangolo.com/)
-- **ORM:** SQLAlchemy (with SQLite for portability)
-- **Validation:** Pydantic v2
-- **Server:** Uvicorn (ASGI)
+## What It Does
+
+- Manages financial records with strict role-based permission boundaries
+- Provides automated summary analytics and real-time dashboard totals
+- Enforces Admin / Analyst / Viewer access tiers via custom FastAPI dependency injection
+- Aggregates data at the SQL level using `func.sum()` and `group_by` for performance
+- Auto-seeds database with test users so reviewers can test immediately via Swagger UI
 
 ---
 
-## 🏗️ Architecture & Design Decisions
-1. **Service-Repository Pattern:** Instead of a monolithic structure, logic is divided into `models`, `schemas`, `crud`, and `routes`. This ensures the code is unit-testable and scalable.
-2. **Database Aggregation:** To optimize performance, dashboard totals (Net Balance, Category Totals) are calculated within the SQL engine using `func.sum()` and `group_by`, minimizing Python memory overhead.
-3. **Seamless DX (Developer Experience):** The root URL (`/`) automatically redirects to `/docs`, and a startup script seeds the database with test users, allowing reviewers to test functionality immediately.
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Language | Python 3.10+ |
+| Framework | FastAPI |
+| ORM | SQLAlchemy |
+| Validation | Pydantic v2 |
+| Database | SQLite (portable) |
+| Server | Uvicorn (ASGI) |
 
 ---
 
-## 🔑 Access Control Matrix
-The system uses the `x-user-id` header to identify users:
+## Access Control Matrix
+
+Uses `x-user-id` header to identify users:
 
 | Feature | Admin (ID: 1) | Analyst (ID: 2) | Viewer (ID: 3) |
-| :--- | :---: | :---: | :---: |
+|---|---|---|---|
 | View Financial Records | ✅ | ✅ | ✅ |
-| Create/Update Records | ✅ | ❌ | ❌ |
+| Create / Update Records | ✅ | ❌ | ❌ |
 | View Dashboard Summary | ✅ | ✅ | ❌ |
 | Delete Records | ✅ | ❌ | ❌ |
 
 ---
 
-## 🏃 How to Run Locally
+## Project Structure
 
-### 1. Setup Environment
+```
+finance_backend/
+├── app/
+│   ├── models/        # SQLAlchemy database models
+│   ├── schemas/       # Pydantic v2 validation schemas
+│   ├── crud/          # Database operations
+│   └── routes/        # API endpoint definitions
+├── tests/             # Unit tests
+├── finance.db         # SQLite database (auto-generated)
+└── requirements.txt
+```
+
+---
+
+## Setup & Run
+
 ```bash
-# Clone the repository
+git clone https://github.com/Siddhimudgal1417/finance_backend.git
 cd finance_backend
 
-# Create and activate a virtual environment
 python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Install dependencies
 pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Open [http://localhost:8000/docs](http://localhost:8000/docs) — auto-redirects to Swagger UI for immediate testing.
+
+---
+
+## Key Design Decisions
+
+- **Service-Repository Pattern** — separates models, schemas, CRUD, and routes for testability and scalability
+- **SQL-level aggregation** — dashboard totals computed in the database engine, not in Python memory
+- **Auto-seeded test data** — startup script populates test users so reviewers can test all permission tiers immediately
+
+---
+
+## Skills Demonstrated
+
+`Python` `FastAPI` `SQLAlchemy` `Pydantic v2` `RBAC` `REST API` `SQLite` `Uvicorn` `Dependency Injection`
+
+---
+
+**Author:** Siddhi Mudgal · [LinkedIn](https://linkedin.com/in/YOUR-LINKEDIN) · [GitHub](https://github.com/Siddhimudgal1417)
