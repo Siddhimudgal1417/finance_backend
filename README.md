@@ -87,4 +87,4 @@ Open [http://localhost:8000/docs](http://localhost:8000/docs) — auto-redirects
 
 ---
 
-**Author:** Siddhi Mudgal · [LinkedIn](https://linkedin.com/in/YOUR-LINKEDIN) · [GitHub](https://github.com/Siddhimudgal1417)
+**Author:** Siddhi Mudgal · [LinkedIn](https://linkedin.com/in/https://www.linkedin.com/in/siddhi-mudgal/) · [GitHub](https://github.com/Siddhimudgal1417)
